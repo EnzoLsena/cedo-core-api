@@ -6,14 +6,12 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
-import { IsCPF } from 'src/decorators/cpf-validator.decorator';
 
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsCPF({ message: 'Insira um CPF válido.' })
   @IsNotEmpty()
   @Transform(({ value }) => value.replace(/\D/g, ''))
   cpf: string;

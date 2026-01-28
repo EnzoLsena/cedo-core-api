@@ -1,11 +1,13 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from 'src/features/abstract/base.entity';
 import { OrderItem } from './order-item.entity';
+import { Customer } from 'src/features/customer/entities/customer.entity';
 
 @Entity('orders')
 export class Order extends BaseEntity {
-  @Column()
-  customerId: string;
+  @ManyToOne(() => Customer)
+  @JoinColumn({ name: 'customerId' })
+  customer: Customer;
 
   @Column()
   status: string;

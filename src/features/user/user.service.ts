@@ -54,7 +54,7 @@ export class UserService {
     return `This action removes a #${id} user`;
   }
 
-  async verifyUserExistsByField({ email, cpf, phone }: CreateUserDto) {
+  async verifyUserExistsByField({ email }: CreateUserDto) {
     if (email) {
       const emailExists = await this.userRepository.exists({
         where: { email },
@@ -63,29 +63,6 @@ export class UserService {
       if (emailExists) {
         throw new ConflictException(
           'Já existe uma conta associada a este e-mail.',
-        );
-      }
-    }
-
-    if (cpf) {
-      const cpfExists = await this.userRepository.exists({
-        where: { cpf },
-      });
-
-      if (cpfExists) {
-        throw new ConflictException(
-          'Já existe uma conta associada a este CPF.',
-        );
-      }
-    }
-    if (phone) {
-      const phoneExists = await this.userRepository.exists({
-        where: { phone },
-      });
-
-      if (phoneExists) {
-        throw new ConflictException(
-          'Já existe uma conta associada a este telefone.',
         );
       }
     }
