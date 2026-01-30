@@ -19,7 +19,6 @@ export class UserService {
     const passWordHashed = await this.hashingService.hash(
       createUserDto.password,
     );
-
     const payload = {
       ...createUserDto,
       password: passWordHashed,

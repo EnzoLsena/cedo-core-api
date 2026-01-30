@@ -6,10 +6,15 @@ import { BCryptService } from './hashing/bcrypt.service';
 import { UserModule } from '../user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Global()
-  @Module({
-  imports:[UserModule, ConfigModule.forFeature(jwtConfig)],
+@Module({
+  imports: [
+    UserModule,
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -18,6 +23,6 @@ import jwtConfig from './config/jwt.config';
       useClass: BCryptService,
     },
   ],
-  exports: [HashingServiceProtocol]
+  exports: [HashingServiceProtocol],
 })
 export class AuthModule {}
