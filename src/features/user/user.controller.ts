@@ -8,19 +8,20 @@ import {
   Delete,
   Query,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination-dto';
 import { AddHeaderIntercptor } from 'src/common/intercptors/add-header.interceptor';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth-guard';
 @Controller('api/v1/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    console.log("porra",createUserDto)
     return this.userService.create(createUserDto);
   }
   @UseInterceptors(AddHeaderIntercptor)
