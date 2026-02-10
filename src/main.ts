@@ -8,6 +8,7 @@ import { ErrorHandlingInterceptor } from './common/intercptors/error-handling.in
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
     new ParseIntIdPipe(),
