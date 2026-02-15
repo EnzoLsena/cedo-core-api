@@ -1,6 +1,6 @@
 import { Entity, Column, OneToMany } from 'typeorm';
-import { BaseEntity } from 'src/features/abstract/base.entity'; 
-import { Order } from 'src/features/order/entities/order.entity'; 
+import { BaseEntity } from '../../abstract/base.entity';
+import { Order } from 'src/features/order/entities/order.entity';
 @Entity('customers')
 export class Customer extends BaseEntity {
   @Column()
@@ -11,6 +11,9 @@ export class Customer extends BaseEntity {
 
   @Column({ nullable: true })
   instagram: string;
+
+  @Column({ unique: true, nullable: true })
+  email: string;
 
   @Column({ nullable: true })
   notes: string;
