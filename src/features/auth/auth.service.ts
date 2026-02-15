@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import { UserService } from '../user/user.service';
 import { HashingServiceProtocol } from './hashing/hashing.service';
@@ -20,7 +20,7 @@ export class AuthService {
     const user = await this.userService.findByEmail(loginCredentialsDto.email);
 
     if (!user) {
-      throw new UnauthorizedException(
+      throw new BadRequestException(
         'Credenciais inválidas, tente novamente.',
       );
     }
@@ -31,7 +31,7 @@ export class AuthService {
     );
 
     if (!passwordMatches) {
-      throw new UnauthorizedException(
+      throw new BadRequestException(
         'Credenciais inválidas, tente novamente.',
       );
     }
