@@ -1,6 +1,7 @@
-import { Entity, Column, OneToMany } from 'typeorm';
-import { BaseEntity } from 'src/features/abstract/base.entity'; 
-import { Recipe } from 'src/features/recipe/entities/recipe.entity'; 
+import { Entity, Column, ManyToOne, OneToOne } from 'typeorm';
+import { BaseEntity } from 'src/features/abstract/base.entity';
+import { Category } from 'src/features/category/entities/category.entity';
+import { Recipe } from 'src/features/recipe/entities/recipe.entity';
 
 @Entity('products')
 export class Product extends BaseEntity {
@@ -13,6 +14,9 @@ export class Product extends BaseEntity {
   @Column({ default: true })
   isActive: boolean;
 
-  @OneToMany(() => Recipe, recipe => recipe.product)
-  recipes: Recipe[];
+  @ManyToOne(() => Category, category => category.products)
+  category: Category;
+
+  @OneToOne(() => Recipe, recipe => recipe.product, { nullable: true })
+  recipe?: Recipe;
 }

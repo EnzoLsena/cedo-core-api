@@ -1,10 +1,12 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from 'src/features/abstract/base.entity'; 
+import { BaseEntity } from 'src/features/abstract/base.entity';
 import { Recipe } from './recipe.entity';
 
 @Entity('recipe_items')
 export class RecipeItem extends BaseEntity {
-  @ManyToOne(() => Recipe, recipe => recipe.items)
+  @ManyToOne(() => Recipe, recipe => recipe.items, {
+    onDelete: 'CASCADE',
+  })
   recipe: Recipe;
 
   @Column()

@@ -8,6 +8,7 @@ import { RecipeModule } from './recipe/recipe.module';
 import { StockModule } from './stock/stock.module';
 import { FinancialModule } from './financial/financial.module';
 import { PricingModule } from './pricing/pricing.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PricingModule } from './pricing/pricing.module';
     StockModule,
     FinancialModule,
     PricingModule,
+    CategoryModule,
   ],
 })
 export class FeaturesModule {}

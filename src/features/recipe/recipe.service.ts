@@ -1,26 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Recipe } from './entities/recipe.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
-import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { Product } from 'src/features/product/entities/product.entity';
 
 @Injectable()
 export class RecipeService {
-  create(createRecipeDto: CreateRecipeDto) {
-    return 'This action adds a new recipe';
+  constructor(
+    @InjectRepository(Recipe)
+    private readonly repository: Repository<Recipe>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
+
+  async create(data: CreateRecipeDto) {
+    const product = await this.productRepository.findOne({
+      where: { id: data.productId },
+    });
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    const totalItemsCost = data.items.reduce(
+      (sum, item) => sum + item.quantity * item.unitCost,
+      0,
+    );
+
+    const totalCost = totalItemsCost + data.laborCost;
+
+    const recipe = this.repository.create({
+      laborCost: data.laborCost,
+      totalCost,
+      product,
+      items: data.items,
+    });
+
+    return this.repository.save(recipe);
   }
 
-  findAll() {
-    return `This action returns all recipe`;
-  }
+  async recalculate(recipeId: number) {
+    const recipe = await this.repository.findOne({
+      where: { id: recipeId },
+      relations: ['items'],
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} recipe`;
-  }
+    if (!recipe) throw new NotFoundException();
 
-  update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    return `This action updates a #${id} recipe`;
-  }
+    const totalItemsCost = recipe.items.reduce(
+      (sum, item) => sum + item.quantity * item.unitCost,
+      0,
+    );
 
-  remove(id: number) {
-    return `This action removes a #${id} recipe`;
+    recipe.totalCost = totalItemsCost + recipe.laborCost;
+
+    return this.repository.save(recipe);
   }
 }

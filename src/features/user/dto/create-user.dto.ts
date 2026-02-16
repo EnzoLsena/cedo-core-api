@@ -8,7 +8,7 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
-import { EUserType } from 'src/common/enum/user-type-enum';
+import { EUserType } from 'src/common/enum/user-type.enum';
 
 export class CreateUserDto {
   @IsString()

@@ -1,23 +1,23 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from 'src/features/abstract/base.entity'; 
+import { BaseEntity } from 'src/features/abstract/base.entity';
 import { Order } from './order.entity';
+import { Product } from 'src/features/product/entities/product.entity';
 
 @Entity('order_items')
 export class OrderItem extends BaseEntity {
-  @ManyToOne(() => Order, order => order.items)
+  @ManyToOne(() => Order, order => order.items, {
+    onDelete: 'CASCADE',
+  })
   order: Order;
 
-  @Column()
-  productId: string;
+  @ManyToOne(() => Product)
+  product: Product;
 
-  @Column()
-  productName: string;
+  @Column('decimal')
+  quantity: number;
 
   @Column('decimal')
   unitPrice: number;
-
-  @Column('int')
-  quantity: number;
 
   @Column('decimal')
   totalPrice: number;

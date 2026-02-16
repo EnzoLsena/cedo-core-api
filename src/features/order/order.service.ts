@@ -1,26 +1,71 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Order } from './entities/order.entity';
+import { EOrderStatus } from 'src/common/enum/order-status.enum';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { Customer } from 'src/features/customer/entities/customer.entity';
+import { Product } from 'src/features/product/entities/product.entity';
 
 @Injectable()
 export class OrderService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(
+    @InjectRepository(Order)
+    private readonly repository: Repository<Order>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
+
+  async create(data: CreateOrderDto) {
+    const customer = await this.customerRepository.findOne({
+      where: { id: data.customerId },
+    });
+
+    if (!customer) throw new NotFoundException('Customer not found');
+
+    let totalAmount = 0;
+
+    const items = [];
+
+    for (const item of data.items) {
+      const product = await this.productRepository.findOne({
+        where: { id: item.productId },
+      });
+
+      if (!product) throw new NotFoundException('Product not found');
+
+      const totalPrice = Number(product.salePrice) * item.quantity;
+
+      totalAmount += totalPrice;
+
+      items.push({
+        product,
+        quantity: item.quantity,
+        unitPrice: product.salePrice,
+        totalPrice,
+      });
+    }
+
+    const order = this.repository.create({
+      customer,
+      items,
+      totalAmount,
+    });
+
+    return this.repository.save(order);
   }
 
-  findAll() {
-    return `This action returns all order`;
-  }
+  async finalize(orderId: number) {
+    const order = await this.repository.findOne({
+      where: { id: orderId },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
+    if (!order) throw new NotFoundException();
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
+    order.status = EOrderStatus.COMPLETED;
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+    return this.repository.save(order);
   }
 }

@@ -1,6 +1,6 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from 'src/features/abstract/base.entity';
-import { EUserType } from 'src/common/enum/user-type-enum';
+import { EUserType } from 'src/common/enum/user-type.enum';
 @Entity('users')
 export class User extends BaseEntity {
   @Column()

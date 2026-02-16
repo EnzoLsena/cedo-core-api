@@ -1,26 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Product } from './entities/product.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { Category } from 'src/features/category/entities/category.entity';
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(
+    @InjectRepository(Product)
+    private readonly repository: Repository<Product>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+  ) {}
+
+  async create(data: CreateProductDto) {
+    const category = await this.categoryRepository.findOne({
+      where: { id: data.categoryId },
+    });
+
+    if (!category) throw new NotFoundException('Category not found');
+
+    const product = this.repository.create({
+      name: data.name,
+      salePrice: data.salePrice,
+      category,
+      isActive: data.isActive ?? true,
+    });
+
+    return this.repository.save(product);
   }
 
-  findAll() {
-    return `This action returns all product`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
-  }
-
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async findAll() {
+    return this.repository.find({ relations: ['category'] });
   }
 }
