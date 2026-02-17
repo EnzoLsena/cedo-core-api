@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Category } from 'src/features/category/entities/category.entity';
+import { PageParams } from 'src/common/pagination/page-params';
+import { PageList } from 'src/common/pagination/page-list';
 
 @Injectable()
 export class ProductService {
@@ -19,19 +21,35 @@ export class ProductService {
       where: { id: data.categoryId },
     });
 
-    if (!category) throw new NotFoundException('Category not found');
+    if (!category) throw new NotFoundException('Categoria não encontrada.');
+    try {
+      const product = this.repository.create({
+        name: data.name,
+        salePrice: data.salePrice,
+        category,
+        isActive: data.isActive ?? true,
+      });
 
-    const product = this.repository.create({
-      name: data.name,
-      salePrice: data.salePrice,
-      category,
-      isActive: data.isActive ?? true,
-    });
-
-    return this.repository.save(product);
+      return this.repository.save(product);
+    } catch (error) {
+      Logger.error('Erro ao criar produto', error.stack);
+      throw error;
+    }
   }
 
-  async findAll() {
-    return this.repository.find({ relations: ['category'] });
+  async findAll(pageParams: PageParams): Promise<PageList<Product>> {
+    const { pageSize, pageNumber } = new PageParams(pageParams);
+    try {
+      const [items, count] = await this.repository.findAndCount({
+        relations: ['category'],
+        skip: (pageNumber - 1) * pageSize,
+        take: pageSize,
+      });
+
+      return new PageList<Product>(items, count, pageSize, pageNumber);
+    } catch (error) {
+      Logger.error('Erro ao buscar produtos', error.stack);
+      throw error;
+    }
   }
 }
