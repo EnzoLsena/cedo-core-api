@@ -5,9 +5,6 @@ import { AuthModule } from './auth/auth.module';
 import { CustomersModule } from './customer/customer.module';
 import { ProductModule } from './product/product.module';
 import { RecipeModule } from './recipe/recipe.module';
-import { StockModule } from './stock/stock.module';
-import { FinancialModule } from './financial/financial.module';
-import { PricingModule } from './pricing/pricing.module';
 import { CategoryModule } from './category/category.module';
 
 @Module({
@@ -18,9 +15,6 @@ import { CategoryModule } from './category/category.module';
     CustomersModule,
     ProductModule,
     RecipeModule,
-    StockModule,
-    FinancialModule,
-    PricingModule,
     CategoryModule,
   ],
 })
