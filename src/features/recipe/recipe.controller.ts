@@ -1,34 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
-import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth-guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from '../auth/jwt-payload.interface';
 
 @Controller('recipe')
+@UseGuards(JwtAuthGuard)
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
   @Post()
-  create(@Body() createRecipeDto: CreateRecipeDto) {
-    return this.recipeService.create(createRecipeDto);
+  create(@Body() createRecipeDto: CreateRecipeDto, @CurrentUser() user: JwtPayload) {
+    return this.recipeService.create(createRecipeDto, user.id);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.recipeService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.recipeService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
-  //   return this.recipeService.update(+id, updateRecipeDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.recipeService.remove(+id);
-  // }
+  @Post(':id/recalculate')
+  recalculate(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.recipeService.recalculate(+id, user.id);
+  }
 }

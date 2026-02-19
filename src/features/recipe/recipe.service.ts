@@ -14,9 +14,9 @@ export class RecipeService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async create(data: CreateRecipeDto) {
+  async create(data: CreateRecipeDto, userId: number) {
     const product = await this.productRepository.findOne({
-      where: { id: data.productId },
+      where: { id: data.productId, user: { id: userId } },
     });
 
     if (!product) throw new NotFoundException('Product not found');
@@ -32,15 +32,16 @@ export class RecipeService {
       laborCost: data.laborCost,
       totalCost,
       product,
+      user: { id: userId },
       items: data.items,
     });
 
     return this.repository.save(recipe);
   }
 
-  async recalculate(recipeId: number) {
+  async recalculate(recipeId: number, userId: number) {
     const recipe = await this.repository.findOne({
-      where: { id: recipeId },
+      where: { id: recipeId, user: { id: userId } },
       relations: ['items'],
     });
 

@@ -1,5 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from 'src/features/abstract/base.entity';
+import { User } from 'src/features/user/entities/user.entity';
 
 @Entity('customers')
 export class Customer extends BaseEntity {
@@ -14,4 +15,8 @@ export class Customer extends BaseEntity {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @ManyToOne(() => User, user => user.customers, { nullable: false })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 }

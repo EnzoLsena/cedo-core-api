@@ -11,12 +11,15 @@ export class CustomerService {
     private readonly repository: Repository<Customer>,
   ) {}
 
-  async create(data: CreateCustomerDto) {
-    const customer = this.repository.create(data);
+  async create(data: CreateCustomerDto, userId: number) {
+    const customer = this.repository.create({
+      ...data,
+      user: { id: userId },
+    });
     return this.repository.save(customer);
   }
 
-  async findAll() {
-    return this.repository.find();
+  async findAll(userId: number) {
+    return this.repository.find({ where: { user: { id: userId } } });
   }
 }

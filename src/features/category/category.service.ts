@@ -13,9 +13,12 @@ export class CategoryService {
     private readonly repository: Repository<Category>,
   ) {}
 
-  async create(data: CreateCategoryDto) {
+  async create(data: CreateCategoryDto, userId: number) {
     try {
-      const category = this.repository.create(data);
+      const category = this.repository.create({
+        ...data,
+        user: { id: userId },
+      });
 
       return this.repository.save(category);
     } catch (error) {
@@ -24,11 +27,12 @@ export class CategoryService {
     }
   }
 
-  async findAll(pageParams: PageParams): Promise<PageList<Category>> {
+  async findAll(pageParams: PageParams, userId: number): Promise<PageList<Category>> {
     const { pageSize, pageNumber } = new PageParams(pageParams);
     try {
       const [items, count] = await this.repository.findAndCount({
-        relations: ['prodcuts'],
+        relations: ['products'],
+        where: { user: { id: userId } },
         skip: (pageNumber - 1) * pageSize,
         take: pageSize,
       });
@@ -40,8 +44,8 @@ export class CategoryService {
     }
   }
 
-  async findOne(id: number) {
-    const category = await this.repository.findOne({ where: { id } });
+  async findOne(id: number, userId: number) {
+    const category = await this.repository.findOne({ where: { id, user: { id: userId } } });
     if (!category) throw new NotFoundException();
     return category;
   }
