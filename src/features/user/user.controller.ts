@@ -16,7 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination-dto';
 import { AddHeaderIntercptor } from 'src/common/intercptors/add-header.interceptor';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth-guard';
-@Controller('api/v1/user')
+@Controller('api/v1/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @UseGuards(JwtAuthGuard)

@@ -6,7 +6,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth-guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/jwt-payload.interface';
 
-@Controller('product')
+@Controller('api/v1/products')
 @UseGuards(JwtAuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
