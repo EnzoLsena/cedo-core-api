@@ -18,7 +18,7 @@ export class ProductService {
 
   async create(data: CreateProductDto, userId: number) {
     const category = await this.categoryRepository.findOne({
-      where: { id: data.categoryId, user: { id: userId } },
+      where: { user: { id: userId } },
     });
 
     if (!category) throw new NotFoundException('Categoria não encontrada.');
@@ -38,7 +38,10 @@ export class ProductService {
     }
   }
 
-  async findAll(pageParams: PageParams, userId: number): Promise<PageList<Product>> {
+  async findAll(
+    pageParams: PageParams,
+    userId: number,
+  ): Promise<PageList<Product>> {
     const { pageSize, pageNumber } = new PageParams(pageParams);
     try {
       const [items, count] = await this.repository.findAndCount({

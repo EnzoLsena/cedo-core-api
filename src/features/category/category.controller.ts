@@ -14,7 +14,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth-guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/jwt-payload.interface';
 
-@Controller('category')
+@Controller('api/v1/categories')
 @UseGuards(JwtAuthGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
