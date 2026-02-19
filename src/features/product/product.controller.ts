@@ -1,35 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { PageParams } from 'src/common/pagination/page-params';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth-guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from '../auth/jwt-payload.interface';
 
 @Controller('product')
+@UseGuards(JwtAuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  create(@Body() createProductDto: CreateProductDto, @CurrentUser() user: JwtPayload) {
+    return this.productService.create(createProductDto, user.id);
   }
 
   @Get()
-  findAll(@Query() pageParams: PageParams) {
-    return this.productService.findAll(pageParams);
+  findAll(@Query() pageParams: PageParams, @CurrentUser() user: JwtPayload) {
+    return this.productService.findAll(pageParams, user.id);
   }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.productService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-  //   return this.productService.update(+id, updateProductDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.productService.remove(+id);
-  // }
 }
